@@ -39,7 +39,7 @@ const index = async (req, res) => {
     {
         res.send({
             'status':true,
-            'message':'No data found',
+            'message':'Something went wrong',
             'data':[]
         })
     }

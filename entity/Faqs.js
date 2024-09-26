@@ -21,17 +21,27 @@ module.exports = (dbConnection, {Schema}) => {
             type:String,
             required:false
         },
+        created_by: {
+            type:String,
+            ref:'admins'
+        },
         deleted_at: {
-            type:Date
+            type:Date,
+            default: null
         },
         created_at: {
-            type:Date
+            type:Date,
+            default: new Date()
         },
         updated_at: {
-            type:Date
+            type:Date,
+            default: new Date()
         },
+    },
+    {
+        versionKey: false
     });
-
+    
     let faqs = dbConnection.model('faqs',FaqsSchema);
 
     return faqs;

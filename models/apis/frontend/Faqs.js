@@ -1,8 +1,22 @@
 const {faqs}   = require('../../index');
 
-const getListing = async (req, select = {}, where = {}) => {
+const getAll = async (where = {}, select = [], joins = [], orderBy = {'title':1}, limit = 10) => {
     try {
-        let {sort, direction, limit, page} = req.query;
+        let listing = await faqs.find(where, select)
+                            .populate(joins)
+                            .sort(orderBy)
+                            .limit(limit);
+        
+        return listing;
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
+const getListing = async (req, select = {}, where = {}, joins = [], orderBy = {'title':1}) => {
+    try {
+        let {sort, direction, limit, offset, page} = req.query;
         
         direction = direction && direction == 'asc' ? -1 : 1;
         sortField = sort ? sort : 'created_at';
@@ -11,9 +25,9 @@ const getListing = async (req, select = {}, where = {}) => {
         orderBy   = { [sortField]:direction }
     
         let listing = faqs.find(where, select, {skip:offset})
+                        .populate(joins)
                         .sort(orderBy)
                         .limit(limit)
-                        .exec();
     
         return listing;
     } catch (error) {
@@ -22,4 +36,4 @@ const getListing = async (req, select = {}, where = {}) => {
     }
 }
 
-module.exports = { getListing };
+module.exports = { getAll, getListing };

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const connectionString = 'mongodb://localhost:27017/realstate';
+const connectionString = 'mongodb://localhost:27017/ecommerce';
 //const connectionString = 'mongodb+srv://globiz:globiz_new@cluster0.lbgxc4q.mongodb.net/rapid';
 
 try

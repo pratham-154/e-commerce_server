@@ -1,5 +1,5 @@
 const { foreach, makeSlug } = require("../../../helper/General");
-const { faqs } = require("../../index");
+const { cms } = require("../../index");
 
 const getListing = async (req, select = {}, where = {}) => {
   try {
@@ -11,12 +11,11 @@ const getListing = async (req, select = {}, where = {}) => {
     offset = page > 1 ? (page - 1) * limit : 0;
     orderBy = { [sortField]: direction };
 
-    let listing = faqs
+    let listing = cms
       .find(where, select, { skip: offset })
       .sort(orderBy)
       .limit(limit)
       .exec();
-
     return listing;
   } catch (error) {
     console.log(error);
@@ -32,7 +31,7 @@ const getAll = async (
   limit = 10
 ) => {
   try {
-    let listing = faqs.find(where, select).sort(orderBy);
+    let listing = cms.find(where, select).sort(orderBy);
 
     if (joins) {
       listing = listing.populate(joins);
@@ -50,28 +49,24 @@ const getAll = async (
 };
 
 const get = async (id, select = [], joins = []) => {
-  try
-  {   
-      let record = faqs.findById(id,select);
-      
-      if(joins)
-      {
-          record = record.populate(joins);
-      }
+  try {
+    let record = cms.findById(id, select);
 
-      record = await record.exec();
+    if (joins) {
+      record = record.populate(joins);
+    }
 
-      return record;
-  }
-  catch(error)
-  {
-      return false;
+    record = await record.exec();
+
+    return record;
+  } catch (error) {
+    return false;
   }
 };
 
 const getRow = async (where, select = []) => {
   try {
-    let record = await faqs.findOne(where, select).exec();
+    let record = cms.findOne(where, select).exec();
     return record;
   } catch (error) {
     console.log(error);
@@ -81,7 +76,7 @@ const getRow = async (where, select = []) => {
 
 const insert = async (data) => {
   try {
-    let row = new faqs();
+    let row = new cms();
     row.created_at = new Date();
 
     foreach(data, (key, value) => {
@@ -112,35 +107,31 @@ const insert = async (data) => {
 };
 
 const update = async (id, data) => {
-  try
-  {
-      data.updated_at = new Date();
-      let resp = await faqs.updateOne(
-          {
-              "_id":id
-          },
-          data
-      ).exec();
+  try {
+    data.updated_at = new Date();
+    let resp = await cms
+      .updateOne(
+        {
+          _id: id,
+        },
+        data
+      )
+      .exec();
 
-      if(resp)
-      {
-          let updated = await get(id);
-          return updated;
-      }
-      else
-      {
-          return null;
-      }
+    if (resp) {
+      let updated = await get(id);
+      return updated;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return false;
   }
-  catch(error)
-  {
-      return false;
-  }
-}
+};
 
 const updateAll = async (ids, data) => {
   try {
-    let resp = await faqs.updateMany(
+    let resp = await cms.updateMany(
       {
         _id: { $in: ids },
       },
@@ -161,7 +152,7 @@ const remove = async (id) => {
   try {
     let getRecord = await get(id);
     if (getRecord) {
-      let record = await faqs
+      let record = await cms
         .deleteOne({
           _id: id,
         })
@@ -177,7 +168,7 @@ const remove = async (id) => {
 
 const removeAll = async (ids) => {
   try {
-    let record = await faqs.deleteMany({
+    let record = await cms.deleteMany({
       _id: { $in: ids },
     });
     return record;
@@ -188,7 +179,7 @@ const removeAll = async (ids) => {
 
 const getCounts = async (where = {}) => {
   try {
-    let record = await faqs.countDocuments(where).exec();
+    let record = await cms.countDocuments(where).exec();
     return record;
   } catch (error) {
     return false;

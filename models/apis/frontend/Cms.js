@@ -1,4 +1,4 @@
-const { faqs } = require("../../index");
+const { cms } = require("../../index");
 
 const getListing = async (req, select = {}, where = {}) => {
   try {
@@ -10,7 +10,7 @@ const getListing = async (req, select = {}, where = {}) => {
     offset = page > 1 ? (page - 1) * limit : 0;
     orderBy = { [sortField]: direction };
 
-    let listing = faqs
+    let listing = cms
       .find(where, select, { skip: offset })
       .sort(orderBy)
       .limit(limit)
@@ -25,7 +25,7 @@ const getListing = async (req, select = {}, where = {}) => {
 
 const get = async (id, select = [], joins = []) => {
   try {
-    let record = faqs.findById(id, select);
+    let record = cms.findById(id, select);
 
     if (joins) {
       record = record.populate(joins);

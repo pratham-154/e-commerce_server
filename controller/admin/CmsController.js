@@ -1,5 +1,5 @@
 const { validatorMake } = require("../../helper/General");
-const faqsModel = require("../../models/apis/admin/Faqs");
+const cmsModel = require("../../models/apis/admin/Cms");
 
 const index = async (req, res) => {
   let { search } = req.query;
@@ -26,7 +26,7 @@ const index = async (req, res) => {
     description: 1,
   };
 
-  let data = await faqsModel.getListing(req, select, where);
+  let data = await cmsModel.getListing(req, select, where);
   if (data) {
     res.send({
       status: true,
@@ -50,7 +50,7 @@ const add = async (req, res) => {
   });
 
   if (!validatorRules.fails()) {
-    let resp = await faqsModel.insert(data);
+    let resp = await cmsModel.insert(data);
     if (resp) {
       res.send({
         status: true,
@@ -81,11 +81,11 @@ const update = async (req, res) => {
   });
 
   if (!validatorRules.fails()) {
-    let resp = await faqsModel.update(id, data);
+    let resp = await cmsModel.update(id, data);
     if (resp) {
       res.send({
         status: true,
-        message: "Record has been saved successfully.",
+        message: "Record has been saved successsfully.",
         data: resp,
       });
     } else {
@@ -106,7 +106,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   let { id } = req.params;
 
-  let resp = await faqsModel.remove(id);
+  let resp = await cmsModel.remove(id);
 
   if (resp) {
     res.send({
@@ -126,12 +126,12 @@ const remove = async (req, res) => {
 const view = async (req, res) => {
   let { id } = req.params;
 
-  let resp = await faqsModel.get(id);
+  let resp = await cmsModel.get(id);
 
   if (resp) {
     res.send({
       status: true,
-      message: "Record has been fetched Successfully.",
+      message: "Record has been fetched successfully.",
       data: resp,
     });
   } else {
@@ -149,20 +149,20 @@ const bulkAction = async (req, res) => {
   if (ids && ids.length > 0 && type) {
     switch (type) {
       case "active":
-        await faqsModel.modifyAll(ids, {
+        await cmsModel.modifyAll(ids, {
           status: 1,
         });
-        message = ids.length + " records has been published.";
+        message = ids.length + "records has been published.";
         break;
       case "inactive":
-        await faqsModel.modifyAll(ids, {
+        await cmsModel.modifyAll(ids, {
           status: 0,
         });
-        message = ids.length + " records has been unpublished.";
+        message = ids.length + "records has been unpublished.";
         break;
       case "delete":
-        await faqsModel.removeAll(ids);
-        message = ids.length + " reconds has been deleted.";
+        await cmsModel.removeAll(ids);
+        message = ids.length + "records has been deleted.";
         break;
     }
     res.send({
@@ -177,11 +177,4 @@ const bulkAction = async (req, res) => {
   }
 };
 
-module.exports = {
-  index,
-  add,
-  update,
-  remove,
-  view,
-  bulkAction,
-};
+module.exports = { index, add, update, remove, view, bulkAction };

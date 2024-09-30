@@ -1,4 +1,4 @@
-const faqsModel = require("../../models/apis/frontend/Faqs");
+const cmsModel = require("../../models/apis/frontend/Cms");
 
 const index = async (req, res) => {
   let { search } = req.query;
@@ -25,7 +25,7 @@ const index = async (req, res) => {
     description: 1,
   };
 
-  let data = await faqsModel.getListing(req, select, where);
+  let data = await cmsModel.getListing(req, select, where);
   if (data) {
     res.send({
       status: true,
@@ -44,7 +44,7 @@ const index = async (req, res) => {
 const view = async (req, res) => {
   let { id } = req.params;
 
-  let resp = await faqsModel.get(id);
+  let resp = await cmsModel.get(id);
 
   if (resp) {
     res.send({

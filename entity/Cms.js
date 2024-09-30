@@ -1,7 +1,7 @@
 module.exports = (dbConnection, { Schema }) => {
   let { ObjectId } = Schema;
 
-  let FaqsSchema = new Schema({
+  let CmsSchema = new Schema({
     author: {
       type: ObjectId,
     },
@@ -35,7 +35,7 @@ module.exports = (dbConnection, { Schema }) => {
     },
   });
 
-  let faqs = dbConnection.model("faqs", FaqsSchema);
+  let cms = dbConnection.model("cms", CmsSchema);
 
-  return faqs;
+  return cms;
 };

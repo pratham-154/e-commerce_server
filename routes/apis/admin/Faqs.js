@@ -3,10 +3,10 @@ const faqsRouter = express.Router();
 
 const FaqsController = require('../../../controller/admin/FaqsController');
 
-faqsRouter.get('/admin/faqs',FaqsController.index);
-faqsRouter.post('/admin/faq/add',FaqsController.add);
-faqsRouter.put('/admin/faq/edit/:id',FaqsController.edit);
-faqsRouter.delete('/admin/faq/delete/:id',FaqsController.remove);
-faqsRouter.get('/admin/faq/view/:id',FaqsController.view);
+faqsRouter.get('/admin/faqs/index',FaqsController.index);
+faqsRouter.post('/admin/faqs/add',FaqsController.add);
+faqsRouter.put('/admin/faqs/update/:id',FaqsController.update);
+faqsRouter.delete('/admin/faqs/delete/:id',FaqsController.remove);
+faqsRouter.get('/admin/faqs/view/:id',FaqsController.view);
 
 module.exports =  faqsRouter;

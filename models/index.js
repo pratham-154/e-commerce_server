@@ -18,5 +18,7 @@ db.dbConnection = dbConnection;
 // Entity
 db.faqs = require("../entity/Faqs")(dbConnection, mongoose);
 db.cms = require("../entity/Cms")(dbConnection, mongoose);
+db.productCategory = require("../entity/ProductCategory")(dbConnection, mongoose);
+db.product = require("../entity/Product")(dbConnection, mongoose);
 
 module.exports = db;

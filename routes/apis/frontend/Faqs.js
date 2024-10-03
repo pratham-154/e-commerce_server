@@ -7,4 +7,4 @@ faqsRouter.get('/faqs/index',FaqsController.index);
 faqsRouter.get('/faqs/view/:id',FaqsController.view);
 
 
-module.exports =  faqsRouter;
+module.exports = faqsRouter;

@@ -1,5 +1,5 @@
-const { validatorMake } = require("../../helper/General");
-const faqsModel = require("../../models/apis/admin/Faqs");
+const { validatorMake } = require('../../helper/General')
+const faqsModel  =  require("../../models/apis/admin/Faqs");
 
 const index = async (req, res) => {
   let { search } = req.query;
@@ -85,7 +85,7 @@ const update = async (req, res) => {
     if (resp) {
       res.send({
         status: true,
-        message: "Record has been saved successfully.",
+        message: "Record has been saved successsfully.",
         data: resp,
       });
     } else {
@@ -131,7 +131,7 @@ const view = async (req, res) => {
   if (resp) {
     res.send({
       status: true,
-      message: "Record has been fetched Successfully.",
+      message: "Record has been fetched successfully.",
       data: resp,
     });
   } else {
@@ -152,17 +152,17 @@ const bulkAction = async (req, res) => {
         await faqsModel.modifyAll(ids, {
           status: 1,
         });
-        message = ids.length + " records has been published.";
+        message = ids.length + "records has been published.";
         break;
       case "inactive":
         await faqsModel.modifyAll(ids, {
           status: 0,
         });
-        message = ids.length + " records has been unpublished.";
+        message = ids.length + "records has been unpublished.";
         break;
       case "delete":
         await faqsModel.removeAll(ids);
-        message = ids.length + " reconds has been deleted.";
+        message = ids.length + "records has been deleted.";
         break;
     }
     res.send({
@@ -177,11 +177,11 @@ const bulkAction = async (req, res) => {
   }
 };
 
-module.exports = {
-  index,
-  add,
-  update,
-  remove,
-  view,
-  bulkAction,
+module.exports = { 
+    index, 
+    add,
+    update,
+    remove,
+    view,
+    bulkAction
 };

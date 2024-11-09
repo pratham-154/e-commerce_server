@@ -67,7 +67,12 @@ const validatorMake = async (data, rules, message) => {
 };
 
 const encrypt = (string) => {
-  return bcrypt(string);
+  const saltRounds = 10;
+  return bcrypt.hash(string, saltRounds);
+};
+
+const comparePassword = (password, encryptedPassword) => {
+  return bcrypt.compare(password, encryptedPassword);
 };
 
 const getHash = (length = 32) => {
@@ -120,11 +125,11 @@ const _date = (timestamp = null) => {
   }
 };
 
-const _datetime = (timestamp = null) => {
+const _datetime = (timestamp = null, addMinutes = 0) => {
   if (timestamp) {
-    return moment(timestamp).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:ss");
+    return moment(timestamp).utcOffset("+05:30").add(addMinutes, 'minutes').format("YYYY-MM-DD HH:mm:ss");
   } else {
-    return moment().utcOffset("+05:30").format("YYYY-MM-DD HH:mm:ss");
+    return moment().utcOffset("+05:30").add(addMinutes, 'minutes').format("YYYY-MM-DD HH:mm:ss");
   }
 };
 
@@ -165,6 +170,15 @@ const getRandomNumber = (length = 6) => {
   return result;
 };
 
+const generatePassword = (length = 8) => {
+  (charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
+    (retVal = "");
+  for (var i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+};
+
 const isJSON = (str) => {
   try {
     JSON.parse(str);
@@ -186,6 +200,7 @@ module.exports = {
   foreach,
   validatorMake,
   encrypt,
+  comparePassword,
   getHash,
   _moment,
   getBearerToken,
@@ -193,6 +208,7 @@ module.exports = {
   _date,
   sendMail,
   getRandomNumber,
+  generatePassword,
   isJSON,
   makeSlug,
 };

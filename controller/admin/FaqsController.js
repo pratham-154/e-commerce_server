@@ -149,13 +149,13 @@ const bulkAction = async (req, res) => {
   if (ids && ids.length > 0 && type) {
     switch (type) {
       case "active":
-        await faqsModel.modifyAll(ids, {
+        await faqsModel.updateAll(ids, {
           status: 1,
         });
         message = ids.length + "records has been published.";
         break;
       case "inactive":
-        await faqsModel.modifyAll(ids, {
+        await faqsModel.updateAll(ids, {
           status: 0,
         });
         message = ids.length + "records has been unpublished.";

@@ -19,9 +19,10 @@
     "jimp": "^1.6.0",
     "md5": "^2.3.0",
     "moment": "^2.30.1",
-    "mongoose": "^8.6.1",
+    "mongoose": "^8.7.2",
     "nodemailer": "^6.9.15",
     "nodemon": "^3.1.4",
+    "validator": "^13.12.0",
     "validatorjs": "^3.22.1"
   }
 }

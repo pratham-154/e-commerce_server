@@ -7,6 +7,6 @@ productRouter.get('/admin/product/index',ProductController.index);
 productRouter.post('/admin/product/add',ProductController.add);
 productRouter.put('/admin/product/update/:id',ProductController.update);
 productRouter.delete('/admin/product/delete/:id',ProductController.remove);
-productRouter.get('/admin/product/view/:id',ProductController.view);
+productRouter.get('/admin/product/view/:slug',ProductController.view);
 
 module.exports =  productRouter;

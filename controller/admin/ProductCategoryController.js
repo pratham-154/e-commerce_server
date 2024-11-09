@@ -143,13 +143,13 @@ const bulkAction = async (req, res) => {
   if (ids && ids.length > 0 && type) {
     switch (type) {
       case "active":
-        await productCategoryModel.modifyAll(ids, {
+        await productCategoryModel.updateAll(ids, {
           status: 1,
         });
         message = ids.length + " records has been published.";
         break;
       case "inactive":
-        await productCategoryModel.modifyAll(ids, {
+        await productCategoryModel.updateAll(ids, {
           status: 0,
         });
         message = ids.length + " records has been unpublished.";

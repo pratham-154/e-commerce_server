@@ -27,7 +27,7 @@ module.exports = (dbConnection, { Schema }) => {
       required: false,
     },
     stock: {
-      type: Number,
+      type: String,
       required: false,
     },
     quantity: {
@@ -35,7 +35,11 @@ module.exports = (dbConnection, { Schema }) => {
       required: false,
     },
     sale: {
-      type: Number,
+      type: String,
+      required: false,
+    },
+    short_description: {
+      type: String,
       required: false,
     },
     description: {

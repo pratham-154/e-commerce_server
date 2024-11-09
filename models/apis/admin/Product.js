@@ -1,23 +1,27 @@
 const { foreach, makeSlug } = require("../../../helper/General");
 const { product } = require("../../index");
 
-const getListing = async (req, select = {}, where = {}) => {
+const getListing = async (req, select = {}, where = {}, joins = []) => {
   try {
     let { sort, direction, limit, page } = req.query;
 
-    direction = direction && direction == "asc" ? -1 : 1;
+    direction = direction && direction == "asc" ? 1 : -1;
     sortField = sort ? sort : "created_at";
-    limit = limit ? parseInt(limit) : 10;
+    limit = limit ? parseInt(limit) : 5;
     offset = page > 1 ? (page - 1) * limit : 0;
     orderBy = { [sortField]: direction };
 
-    let listing = product
+    let listing = await product
       .find(where, select, { skip: offset })
       .sort(orderBy)
       .limit(limit)
+      .populate(joins)
       .exec();
+    
+    let totalCount = await product.countDocuments(where);
+    let totalPages = Math.ceil(totalCount / limit);
 
-    return listing;
+    return { listing, totalCount, totalPages };
   } catch (error) {
     console.log(error);
     return false;
@@ -69,9 +73,14 @@ const get = async (id, select = [], joins = []) => {
   }
 };
 
-const getRow = async (where, select = []) => {
+const getRow = async (where, joins = [], select = [],) => {
+
   try {
     let record = await product.findOne(where, select).exec();
+
+    if (joins.length > 0) {
+      record = record.populate(joins);
+    }
     return record;
   } catch (error) {
     console.log(error);

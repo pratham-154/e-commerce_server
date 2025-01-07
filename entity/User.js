@@ -37,6 +37,10 @@ module.exports = (dbConnection, { Schema }) => {
       type: Number,
       required: false,
     },
+    like: {
+      type: [String],
+      required: false,
+    },
     image: {
       type: String,
       required: false,

@@ -27,5 +27,8 @@ db.feedback = require("../entity/Feedback")(dbConnection, mongoose);
 db.contactUs = require("../entity/ContactUs")(dbConnection, mongoose);
 db.aboutUs = require("../entity/AboutUs")(dbConnection, mongoose);
 db.partner = require("../entity/Partner")(dbConnection, mongoose);
+db.address = require("../entity/Address")(dbConnection, mongoose);
+db.order = require("../entity/Order")(dbConnection, mongoose);
+db.cart = require("../entity/Cart")(dbConnection, mongoose);
 
 module.exports = db;

@@ -9,6 +9,7 @@ const {
   comparePassword,
 } = require("../../helper/General");
 const userModel = require("../../models/apis/frontend/User");
+const productModel = require("../../models/apis/frontend/Product");
 
 const index = async (req, res) => {
   let { search } = req.query;
@@ -92,7 +93,6 @@ const update = async (req, res) => {
     last_name: "required",
     phone_number: "required",
     email: "required",
-    password: "required",
   });
 
   if (!validatorRules.fails()) {
@@ -153,6 +153,130 @@ const view = async (req, res) => {
     res.send({
       status: false,
       message: "Something went wrong. Please try again later.",
+      data: [],
+    });
+  }
+};
+
+const like = async (req, res) => {
+  let { id } = req.userId;
+  let { slug } = req.body;
+  console.log("slug", slug);
+
+  let user = await userModel.get(id);
+
+  if (user.like.includes(slug)) {
+    user.like = user.like.filter((item) => item !== slug);
+  } else {
+    user.like.push(slug);
+  }
+
+  let resp = await user.save();
+
+  if (resp) {
+    res.send({
+      status: true,
+      message: "Liked Properties Updated",
+      data: resp,
+    });
+  } else {
+    res.send({
+      status: false,
+      message: "Something went wrong. Please try again later.",
+      data: [],
+    });
+  }
+};
+
+const removeLike = async (req, res) => {
+  let { id } = req.userId;
+  let { slug } = req.params;
+  console.log("slug", req.params);
+
+  let user = await userModel.get(id);
+
+  if (user.like.includes(slug)) {
+    user.like = user.like.filter((item) => item !== slug);
+
+    let resp = await user.save();
+    console.log("resp", resp);
+
+    if (resp) {
+      res.send({
+        status: true,
+        message: "Product removed from liked items.",
+        data: resp,
+      });
+    }
+  } else {
+    res.send({
+      status: false,
+      message: "Product not found in liked items.",
+      data: [],
+    });
+  }
+};
+
+const wishlist = async (req, res) => {
+  let { id } = req.userId;
+
+  let user = await userModel.get(id);
+
+  if (!user || !user.like || user.like.length === 0) {
+    return res.send({
+      status: false,
+      message: "No liked products found in the user's wishlist.",
+      data: [],
+    });
+  }
+
+  let { stock, category_id, sale } = req.query.params;
+  let where = { slug: { $in: user.like }, status: 1 };
+
+  if (stock) {
+    where = {
+      ...where,
+      stock: stock,
+    };
+  }
+
+  if (category_id) {
+    where = {
+      ...where,
+      category_id: {
+        $in: category_id,
+      },
+    };
+  }
+
+  if (sale === "1") {
+    where = {
+      ...where,
+      sale: { $ne: "" },
+    };
+  }
+
+  let joins = [
+    {
+      path: "category_id",
+      select: "_id title",
+    },
+  ];
+
+  let resp = await productModel.getListing(req, {}, where, joins);
+
+  if (resp && resp.listing && resp.listing.length > 0) {
+    res.send({
+      status: true,
+      message: "Wishlist products retrieved successfully.",
+      data: resp.listing,
+      totalCount: resp.totalCount,
+      totalPages: resp.totalPages,
+    });
+  } else {
+    res.send({
+      status: false,
+      message: "No products found for the given wishlist.",
       data: [],
     });
   }
@@ -223,6 +347,8 @@ const signIn = async (req, res) => {
         );
         if (isPasswordMatched) {
           let update = {
+            token: null,
+            token_expiry_at: null,
             login_token: getHash(64),
             last_login_at: _datetime(),
             login_expiry_at: _datetime(null, 30),
@@ -498,8 +624,8 @@ const resetPassword = async (req, res) => {
 
     if (resp) {
       let update = {
-        token: null,
-        token_expiry_at: null,
+        token: getHash(64),
+        token_expiry_at: _datetime(null, 30),
         password: await encrypt(data.password),
       };
 
@@ -540,16 +666,60 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  let { id } = req.userId;
+  let data = req.body;
+  let validatorRules = await validatorMake(data, {
+    old_password: "required",
+    password: "required",
+    password_confirmation: "required|same:password",
+  });
+  if (!validatorRules.fails()) {
+    let userData = await userModel.getRow({ _id: id });
+    if (comparePassword(data.old_password, userData.password)) {
+      let update = {
+        password: await encrypt(data.password),
+      };
+      let response = await userModel.update(userData._id, update);
+      if (response) {
+        // sendMail(userData.email,"Password updated",`<h1>Ypur Password was updated on ${_datetime()}</h1>`);
+        res.send({
+          status: true,
+          message: "Password Updated",
+          data: response,
+        });
+      } else {
+        res.send({
+          status: false,
+          message: "Failed to change password",
+          data: [],
+        });
+      }
+    } else {
+      res.send({
+        status: false,
+        message: "Wrong Password",
+        data: [],
+      });
+    }
+  } else {
+    res.send({
+      status: false,
+      message: "Validation Error",
+      data: [],
+    });
+  }
+};
+
 const logout = async (req, res) => {
-  let logoutUser = await userModel.getLoginUser(req);
-  let userid = logoutUser ? logoutUser._id : null;
-  if (userid) {
-    let resp = await userModel.getRow({ _id: userid });
+  let { id } = req.userId;
+  if (id) {
+    let resp = await userModel.getRow({ _id: id });
 
     if (resp) {
       let update = {
         login_token: null,
-        token_expiry_at: null,
+        login_expiry_at: null,
       };
       let userUpdate = await userModel.update(resp._id, update);
       if (userUpdate) {
@@ -616,12 +786,16 @@ module.exports = {
   update,
   remove,
   view,
+  like,
+  removeLike,
+  wishlist,
   signUp,
   signIn,
   forgetPassword,
   verifyOtp,
   resendOtp,
   resetPassword,
+  changePassword,
   logout,
   bulkAction,
 };

@@ -2,7 +2,7 @@ const { product } = require("../../index");
 
 const getListing = async (req, select = {}, where = {}, joins = []) => {
   try {
-    let { sort, direction, limit, page } = req.query;
+    let { sort, direction, limit, page } = req.query.params;
 
     direction = direction && direction == "asc" ? 1 : -1;
     sortField = sort ? sort : "created_at";
@@ -35,7 +35,7 @@ const getListing = async (req, select = {}, where = {}, joins = []) => {
     // ];
 
     // let listing = await product.aggregate(pipeline).exce();
-    
+
     let totalCount = await product.countDocuments(where);
     let totalPages = Math.ceil(totalCount / limit);
 
@@ -101,4 +101,27 @@ const getRow = async (where, joins = [], select = []) => {
   }
 };
 
-module.exports = { getListing, get, getRow, getAll };
+const update = async (id, data) => {
+  try {
+    data.updated_at = new Date();
+    let resp = await product
+      .updateOne(
+        {
+          _id: id,
+        },
+        data
+      )
+      .exec();
+
+    if (resp) {
+      let updated = await get(id);
+      return updated;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+module.exports = { getListing, get, getRow, getAll, update };

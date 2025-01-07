@@ -7,7 +7,6 @@ const User = async (req, res, next) => {
     let userData = await checkToken(token);
     if (userData) {
       req.userId = userData;
-
       next();
     } else {
       res.status(401).send({

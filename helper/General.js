@@ -119,17 +119,17 @@ const getBearerToken = (req) => {
 
 const _date = (timestamp = null) => {
   if (timestamp) {
-    return moment(timestamp).utcOffset("+05:30").format("YYYY-MM-DD");
+    return moment(timestamp).utcOffset("+05:30").format("DD MMM, YYYY");
   } else {
-    return moment().utcOffset("+05:30").format("YYYY-MM-DD");
+    return moment().utcOffset("+05:30").format("DD MMM, YYYY");
   }
 };
 
-const _datetime = (timestamp = null, addMinutes = 0) => {
+const _datetime = (timestamp = null) => {
   if (timestamp) {
-    return moment(timestamp).utcOffset("+05:30").add(addMinutes, 'minutes').format("YYYY-MM-DD HH:mm:ss");
+    return moment(timestamp).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:ss");
   } else {
-    return moment().utcOffset("+05:30").add(addMinutes, 'minutes').format("YYYY-MM-DD HH:mm:ss");
+    return moment().utcOffset("+05:30").format("YYYY-MM-DD HH:mm:ss");
   }
 };
 
@@ -137,20 +137,22 @@ const sendMail = (to, subject, body) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
+    secure: true,
     auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD,
+      user: "globiznotification@gmail.com",
+      pass: "mmcxulnkhaxcngqo",
     },
   });
 
   transporter
     .sendMail({
-      from: process.env.SMTP_USERNAME,
+      from: "globiznotification@gmail.com",
       to: to,
       subject: subject,
       html: body,
     })
     .then((result) => {
+      console.log(result);
       return true;
     })
     .catch((err) => {

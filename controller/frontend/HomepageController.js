@@ -6,6 +6,13 @@ const feedbackModel = require("../../models/apis/frontend/Feedback");
 const view = async (req, res) => {
   let { id } = req.params;
 
+  req.query.params = req.query.params || {
+    sort: "created_at",
+    direction: "desc",
+    limit: 5,
+    page: 1,
+  };
+
   let resp = await homepageModel.get(id);
 
   if (resp) {

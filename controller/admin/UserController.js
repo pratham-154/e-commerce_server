@@ -4,9 +4,7 @@ const {
   getHash,
   _datetime,
   sendMail,
-  generatePassword,
   encrypt,
-  comparePassword,
 } = require("../../helper/General");
 const userModel = require("../../models/apis/admin/User");
 
@@ -92,7 +90,6 @@ const update = async (req, res) => {
     last_name: "required",
     phone_number: "required",
     email: "required",
-    password: "required",
   });
 
   if (!validatorRules.fails()) {
@@ -215,57 +212,34 @@ const signIn = async (req, res) => {
       email: data.email,
     });
 
+    console.log(resp);
+
     if (resp) {
-      if (resp.email_verified) {
-        const isPasswordMatched = await comparePassword(
-          data.password,
-          resp.password
-        );
-        if (isPasswordMatched) {
-          let update = {
-            login_token: getHash(64),
-            last_login_at: _datetime(),
-            login_expiry_at: _datetime(null, 30),
-          };
-          let userUpdate = await userModel.update(resp._id, update);
-          if (userUpdate) {
-            res.send({
-              status: true,
-              message: "Login Successfully!",
-              data: userUpdate,
-            });
-          } else {
-            res.send({
-              status: false,
-              message: "Login Failed, Try Again!",
-              data: [],
-            });
-          }
+      if (resp.password == data.password) {
+        let update = {
+          login_token: getHash(64),
+          last_login_at: _datetime(),
+          login_expiry_at: _datetime(null, 30),
+        };
+        let userUpdate = await userModel.update(resp._id, update);
+        if (userUpdate) {
+          res.send({
+            status: true,
+            message: "Login Successfully!",
+            data: userUpdate,
+          });
         } else {
           res.send({
             status: false,
-            message: "Wrong Password!",
+            message: "Login Failed, Try Again!",
             data: [],
           });
         }
       } else {
-        let update = { otp: "" };
-
-        if (!resp.otp) {
-          update = { opt: getRandomNumber(6) };
-          let userUpdate = await userModel.update(resp._id, update);
-        }
-
-        sendMail(
-          resp.email,
-          "One Time Password",
-          `<h1>${resp.otp ? resp.otp : update.otp}</h1>`
-        );
         res.send({
-          status: true,
-          message: "Please verified your email",
-          data: resp,
-          type: "NOT_VERIFIED",
+          status: false,
+          message: "Wrong Password!",
+          data: [],
         });
       }
     } else {
@@ -291,61 +265,27 @@ const forgetPassword = async (req, res) => {
 
   if (!validatorRules.fails()) {
     let resp = await userModel.getRow({ email: data.email });
-    if (resp) {
-      if (resp.email_verified != null) {
-        data.token = getHash(64);
-        data.otp = getRandomNumber(6);
-        data.token_expiry_at = _datetime(null, 30);
-        let update = {
-          otp: data.otp,
-          token: data.token,
-          token_expiry_at: data.token_expiry_at,
-        };
+    console.log("resp", resp);
+    if (resp.email == data.email) {
+      let update = {
+        password: data.password,
+      };
 
-        let updateResp = await userModel.update(resp._id, update);
+      let updateResp = await userModel.update(resp._id, update);
 
-        if (updateResp) {
-          sendMail(data.email, "One Time Password", `<h1>${data.otp}</h1>`);
-          res.send({
-            status: true,
-            message: "Please check your email for OTP",
-            data: updateResp,
-          });
-        } else {
-          res.send({
-            status: false,
-            message: "Failed to send email",
-            data: updateResp,
-          });
-        }
-      } else if (resp.email_verified == null) {
-        let pass = generatePassword(16);
-        data.password = pass.toLowerCase();
-        data.token = getHash(64);
-        let update = {
-          password: data.password,
-          token: data.token,
-        };
-        let updateResp = await userModel.update(resp._id, update);
-
-        if (updateResp) {
-          sendMail(
-            data.email,
-            "Temporary  Password",
-            `<h1>${data.password}</h1>`
-          );
-          res.send({
-            status: true,
-            message: "Please check your email for Temporary Password",
-            data: updateResp,
-          });
-        } else {
-          res.send({
-            status: false,
-            message: "Failed to send email",
-            data: updateResp,
-          });
-        }
+      if (updateResp) {
+        sendMail(data.email, "New Password", `<h1>${data.password}</h1>`);
+        res.send({
+          status: true,
+          message: "Please check your email for New Password",
+          data: updateResp,
+        });
+      } else {
+        res.send({
+          status: false,
+          message: "Failed to send email",
+          data: updateResp,
+        });
       }
     } else {
       res.send({

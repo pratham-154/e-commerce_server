@@ -1,62 +1,38 @@
 module.exports = (dbConnection, { Schema }) => {
   let { ObjectId } = Schema;
 
-  let ProductSchema = new Schema({
+  let AddressSchema = new Schema({
     author: {
       type: ObjectId,
     },
-    image: {
-      type: [String],
-      required: false,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    category_id: {
+    user_id: {
       type: ObjectId,
       required: false,
-      ref: "productCategory",
+      ref: "user",
     },
-    price: {
-      type: Number,
-      required: false,
-    },
-    discount: {
-      type: Number,
-      required: false,
-    },
-    stock: {
+    house: {
       type: String,
       required: false,
     },
-    quantity: {
-      type: Number,
-      required: false,
-    },
-    count: {
-      type: Number,
-      required: false,
-    },
-    sale: {
+    street: {
       type: String,
       required: false,
     },
-    short_description: {
+    state: {
       type: String,
       required: false,
     },
-    description: {
+    city: {
       type: String,
-      required: true,
+      required: false,
     },
-    tax: {
+    pincode: {
       type: Number,
-      default: 0.18,
+      required: false,
     },
-    delivery: {
+    phone_number: {
       type: Number,
-      default: 40,
+      required: false,
     },
     status: {
       type: Number,
@@ -80,7 +56,7 @@ module.exports = (dbConnection, { Schema }) => {
     },
   });
 
-  let product = dbConnection.model("product", ProductSchema);
+  let address = dbConnection.model("address", AddressSchema);
 
-  return product;
+  return address;
 };
